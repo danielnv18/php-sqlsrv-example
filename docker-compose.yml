@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  database:
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    ports:
+      - '1433:1433'
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: YourNewStrong!Passw0rd
+      MSSQL_PID: Developer
+    volumes:
+      - mssqldata:/var/opt/mssql
+
+  php:
+    build: .
+    volumes:
+      - ./:/var/www/html:cached
+
+volumes:
+  mssqldata:
+    driver: 'local'
+    

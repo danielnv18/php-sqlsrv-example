@@ -16,6 +16,30 @@ services:
     build: .
     volumes:
       - ./:/var/www/html:cached
+      
+  nginx:
+    image: wodby/nginx:1.15-5.4.0
+    depends_on:
+      - php
+    environment:
+      NGINX_STATIC_OPEN_FILE_CACHE: "off"
+      NGINX_ERROR_LOG_LEVEL: debug
+      NGINX_BACKEND_HOST: php
+      NGINX_VHOST_PRESET: php
+    volumes:
+      - ./:/var/www/html:cached
+    labels:
+      - 'traefik.backend=php_sqlsrv_example_nginx'
+      - 'traefik.port=80'
+      - 'traefik.frontend.rule=Host:php-sqlsrv-example.local'
+
+  traefik:
+    image: traefik
+    command: -c /dev/null --web --docker --logLevel=INFO
+    ports:
+      - '80:80'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
   mssqldata:
